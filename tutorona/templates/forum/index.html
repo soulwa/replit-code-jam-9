@@ -1,0 +1,40 @@
+{% extends 'layout.html' %}
+
+{% block title %} index {% endblock %}
+
+{% block header %} Forum {% endblock %}
+
+{% block main %}
+
+  {% if posts == [] %}
+    <p>no posts yet! post something!</p>
+  {% else %}
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Title</th>
+          <th scope="col">User</th>
+          <th scope="col">Preview</th>
+          <th scope="col">Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for post in posts %}
+          <tr>
+            <td><a href="{{ url_for('forum.forum_post', id=post['id']) }}">{{ post['title'] }}</a></td>
+            <td>{{ post['username'] }}</td>
+            <td>{{ post['post_content'][0:29] }}</td>
+            <td>{{ post['created'] }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+
+  <form action="/" method="post">
+    <input autofocus name="title" placeholder="Title" type="text" maxlength="128" required>
+    <textarea name="post_content" rows="9" cols="100" placeholder="write your post here!" type="text" required></textarea>
+    <input type="submit" value="Publish">
+  </form>
+
+{% endblock %}

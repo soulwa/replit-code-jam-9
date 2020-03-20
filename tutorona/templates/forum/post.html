@@ -1,0 +1,27 @@
+{% extends 'layout.html' %}
+
+{% block title %} index {% endblock %}
+
+{% block header %} Forum {% endblock %}
+
+{% block main %}
+
+  <h1>{{ forum_post['title']}} by {{ forum_post['username'] }}</h1>
+  <h2>created {{ forum_post['created']}}</h2>
+  <p>{{ forum_post['post_content'] }}</p>
+
+  <form action="{{ url_for('forum.comment', id=forum_post['id']) }}" method="post">
+    <textarea name="comment" rows="3" cols="50" placeholder="leave a comment!" type="text" required></textarea>
+    <input type="submit" value="Comment">
+  </form>
+
+  {% if comments %}
+    <ul>
+      {% for comment in comments %}
+        <li> {{ comment['username'] }} at {{ comment['created'] }}: {{ comment['comment_content'] }} </li>
+        <hr>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+{% endblock %}

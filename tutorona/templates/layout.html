@@ -1,0 +1,28 @@
+<html>
+  <head>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <title>tutorona: {% block title %}{% endblock %}</title>
+
+  </head>
+      
+  <body>
+
+    <nav>
+      <h1>{% block header %}{% endblock %}</h1>
+      <ul>
+        {% if g.user %}
+          <li><span>{{ g.user['username'] }}</span>
+          <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
+        {% else %}
+          <li><a href="{{ url_for('auth.register') }}">Register</a>
+          <li><a href="{{ url_for('auth.login') }}">Log In</a>
+        {% endif %}
+      </ul>
+    </nav>
+
+    {% block main %}{% endblock %}
+
+  </body>
+</html>

@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+
+{% block title %} register {% endblock %}
+
+{% block header %} Register {% endblock %}
+
+{% block main %}
+  <form action="/register" method="post">
+    <input autocomplete="off" autofocus name="email" placeholder="Email" type="email" required>
+    <input name="username" placeholder="Username" type="text" required>
+    <input name="password" placeholder="Password" type="password" required>
+    <input name="confirmation" placeholder="Confirm password" type="password" required>
+    <select name="language" required>
+      <option value="eng" selected>English</option>
+      <option value="cmn">Mandarin Chinese</option>
+      <option value="hin">Hindi</option>
+      <option value="spa">Spanish</option>
+    </select>
+    <input type="submit" value="Register!">
+  </form>
+{% endblock %}
+
