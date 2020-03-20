@@ -1,8 +1,11 @@
 import os
 
 from flask import Flask
+from werkzeug.exceptions import HTTPException
+
 from . import db
 from . import auth, forum
+from . import error
 
 def create_app(test_config=None):
   app = Flask(__name__, instance_relative_config=True)
@@ -27,5 +30,8 @@ def create_app(test_config=None):
 
   app.register_blueprint(forum.bp)
   app.add_url_rule('/', endpoint='index')
+
+  app.register_error_handler(404, error.handle_http_404)
+  app.register_error_handler(HTTPException, error.handle_http_exception)
 
   return app
