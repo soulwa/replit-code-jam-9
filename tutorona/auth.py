@@ -15,19 +15,15 @@ bp = Blueprint('auth', __name__)
 def register():
   if request.method == 'POST':
     if not request.form.get('email'):
-      return abort(400) # no email
+      return abort(400, "no email provided") # no email
     if not request.form.get('username'):
-      print('no username')
-      return abort(400) # no username
+      return abort(400, "no username provided") # no username
     if not request.form.get('password'):
-      print('no pw')
-      return abort(400) # no pw
+      return abort(400, "no password provided") # no pw
     if not request.form.get('confirmation'):
-      print('no confirm')
-      return abort(400) # pw not confirmed
+      return abort(400, "password not confirmed") # pw not confirmed
     if not request.form.get('language'):
-      print('no lang')
-      return abort(400) # no lang selected
+      return abort(400, "no language selected") # no lang selected
 
     email = request.form.get('email')
     username = request.form.get('username')
@@ -36,17 +32,16 @@ def register():
     language = request.form.get('language')
 
     if password != confirmation:
-      print('pw != conf')
-      abort(400) # make sure pw and confirmation match
+      abort(400, "password and confirmation don't match") # make sure pw and confirmation match
     
     db = get_db()
     if db.execute("SELECT id FROM users WHERE username = ?", (username,)).fetchone() is not None:
       print('username taken')
-      abort(400) # username already exists
+      abort(400, "username already exists") # username already exists
     
     if len(username) > 32:
       print('too long')
-      abort(400) # name too long
+      abort(400, "username too long (max 32 characters)") # name too long
     
     hashed_pw = generate_password_hash(password)
     current_time = datetime.now().astimezone(pytz.timezone('US/Eastern'))
@@ -68,9 +63,9 @@ def login():
 
   if request.method == 'POST':
     if not request.form.get('username'):
-      return abort(401) # no username
+      return abort(401, "please input your username") # no username
     if not request.form.get('password'):
-      return abort(401) # no pw
+      return abort(401, "please input your password") # no pw
     
     username = request.form.get('username')
     password = request.form.get('password')
@@ -79,9 +74,9 @@ def login():
     user = db.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
 
     if user is None:
-      return abort(401) # user doesn't exist
+      return abort(401, "username doesn't exist") # user doesn't exist
     if not check_password_hash(user['pw_hash'], password):
-      return abort(401) # password incorrect
+      return abort(401, "incorrect password") # password incorrect
     
     session['user_id'] = user['id']
     return redirect(url_for('index'))
