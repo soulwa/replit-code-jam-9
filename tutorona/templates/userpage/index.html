@@ -1,0 +1,56 @@
+{% extends 'layout.html' %}
+
+{% block title %} User {% endblock %}
+
+{% block header %} Userpage {% endblock %}
+
+{% block main %}
+
+  <h1>
+    {{ user_info['username'] }}
+  </h1>
+  <ul>
+
+    <li>Bio: {{ user_info['bio'] }}</li>
+
+    {% if g.user['id'] == user_info['id'] %}
+      <form action='/edit' method='post'>
+        <input type="text" placeholder="edit bio here" name="new_bio">
+        <input type="submit">
+      </form>
+    {% endif %}
+
+    <li>Email: {{ user_info['email'] }}</li>
+    <li>Joined: {{ user_info['created'] }}</li>
+  </ul>
+
+  <h2>
+    {{ user_info['username'] }}'s posts
+  </h2>
+
+  {% if not user_posts %}
+    <p>This user has no posts yet</p>
+
+  {% else %}
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Title</th>
+          <th scope="col">Preview</th>
+          <th scope="col">Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for post in user_posts %}
+          <tr>
+            <td><a href="{{ url_for('forum.forum_post', id=post['id']) }}">{{ post['title'] }}</a></td>
+            <td>{{ post['post_content'][0:29] }}</td>
+            <td>{{ post['created'] }}</td>
+          </tr>
+        {% endfor %}
+        {% endif %}
+      </tbody>
+    </table>
+
+
+{% endblock %}

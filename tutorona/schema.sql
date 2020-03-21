@@ -10,7 +10,8 @@ CREATE TABLE users (
   created DATETIME NOT NULL,
   last_signin DATETIME NOT NULL,
   lang CHAR(3) NOT NULL,
-  bio TEXT NOT NULL DEFAULT ''
+  bio TEXT NOT NULL DEFAULT '',
+  picture IMAGE
 );
 
 CREATE TABLE posts (

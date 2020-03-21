@@ -13,12 +13,15 @@
       <h1>{% block header %}{% endblock %}</h1>
       <ul>
         {% if g.user %}
-          <li><span>{{ g.user['username'] }}</span></li>
+          <li><span>
+            <a href="{{ url_for('userpage.user', username=g.user['username']) }}">{{ g.user['username'] }}</a>
+            </span></li>
           <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
         {% else %}
           <li><a href="{{ url_for('auth.register') }}">Register</a></li>
           <li><a href="{{ url_for('auth.login') }}">Log In</a></li>
         {% endif %}
+          <li><a href="{{ url_for('forum.index') }}">Forum</a></li>
       </ul>
     </nav>
 
