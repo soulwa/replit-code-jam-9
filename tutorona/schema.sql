@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS posts;
 DROP TABLE IF EXISTS comments;
+DROP TABLE IF EXISTS messages;
 
 CREATE TABLE users (
   id INTEGER PRIMARY KEY,
@@ -32,4 +33,14 @@ CREATE TABLE comments (
   user_id INTEGER NOT NULL,
   FOREIGN KEY(post_id) REFERENCES posts(id),
   FOREIGN KEY(user_id) REFERENCES users(id)
+);
+
+CREATE TABLE messages (
+  id INTEGER PRIMARY KEY,
+  sender INTEGER NOT NULL,
+  recipient INTEGER NOT NULL,
+  created DATETIME NOT NULL,
+  content TEXT NOT NULL,
+  FOREIGN KEY(sender) REFERENCES users(id),
+  FOREIGN KEY(recipient) REFERENCES users(id)
 );

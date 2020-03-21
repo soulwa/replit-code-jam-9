@@ -9,6 +9,7 @@
   <h1>
     {{ user_info['username'] }}
   </h1>
+  <h2><a href="{{ url_for('chat.chat', username=user_info['username']) }}">chat with {{ user_info['username'] }}!</a></h2>
   <ul>
 
     <li>Bio: {{ user_info['bio'] }}</li>
