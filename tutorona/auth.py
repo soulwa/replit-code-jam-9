@@ -5,7 +5,7 @@ from datetime import datetime
 from flask import abort, Blueprint, flash, g, redirect, render_template, request, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from .db import get_db
+from .db import get_db, get_dict_cursor
 
 bp = Blueprint('auth', __name__)
 
@@ -35,7 +35,10 @@ def register():
       abort(400, "password and confirmation don't match") # make sure pw and confirmation match
     
     db = get_db()
-    if db.execute("SELECT id FROM users WHERE username = ?", (username,)).fetchone() is not None:
+    cur = get_dict_cursor(db)
+    cur.execute("SELECT id FROM users WHERE username = %s;", (username,))
+
+    if cur.fetchone() is not None:
       print('username taken')
       abort(400, "username already exists") # username already exists
     
@@ -45,11 +48,12 @@ def register():
     
     hashed_pw = generate_password_hash(password)
     current_time = datetime.now().astimezone(pytz.timezone('US/Eastern'))
-    db.execute(
-      "INSERT INTO users (username, pw_hash, email, created, last_signin, lang) VALUES (?, ?, ?, ?, ?, ?)",
+    cur.execute(
+      "INSERT INTO users (username, pw_hash, email, created, last_signin, lang) VALUES (%s, %s, %s, %s, %s, %s);",
       (username, hashed_pw, email, current_time, current_time, language)
     )
     db.commit()
+    cur.close()
 
     return redirect(url_for('auth.login'))
 
@@ -70,8 +74,11 @@ def login():
     username = request.form.get('username')
     password = request.form.get('password')
     db = get_db()
+    cur = get_dict_cursor(db)
     
-    user = db.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
+    cur.execute("SELECT * FROM users WHERE username = %s;", (username,))
+    user = cur.fetchone()
+    cur.close()
 
     if user is None:
       return abort(401, "username doesn't exist") # user doesn't exist
@@ -108,5 +115,10 @@ def load_user():
   if user_id is None:
     g.user = None
   else:
-    g.user = get_db().execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
+    with get_dict_cursor(get_db()) as cur:
+      cur.execute("SELECT * FROM users WHERE id = %s;", (user_id,))
+      if cur is None:
+        g.user = None
+      else:
+        g.user = cur.fetchone()
 

@@ -6,7 +6,7 @@ from flask import Blueprint, g, render_template, request, redirect, url_for, abo
 from flask_socketio import SocketIO, join_room, emit
 
 from .auth import login_required
-from .db import get_db
+from .db import get_db, get_dict_cursor
 from . import socketio
 
 bp = Blueprint('chat', __name__)
@@ -52,6 +52,7 @@ def load_room(msg):
 @socketio.on('message_send')
 def handle_message(msg):
 	db = get_db()
+	cur = get_dict_cursor(db)
 	content = msg['content']
 	recipient = msg['recipient']
 	sender = msg['sender']
@@ -59,18 +60,21 @@ def handle_message(msg):
 	if content == '' or recipient == '' or sender == '':
 		return abort(403, 'no content or user on message sent')
 
-	user = db.execute("SELECT * FROM users WHERE id = ?", (sender,)).fetchone()
-	other_user = db.execute("SELECT * FROM users WHERE id = ?", (recipient,)).fetchone()
+	cur.execute("SELECT * FROM users WHERE id = %s;", (sender,))
+	user = cur.fetchone()
+	cur.execute("SELECT * FROM users WHERE id = %s;", (recipient,))
+	other_user = cur.fetchone()
 	if user is None or other_user is None:
 		return abort(403, 'message sent to/from nonexistent user')
 
 	current_time = datetime.now().astimezone(pytz.timezone('US/Eastern'))
 
-	db.execute(
-		"INSERT INTO messages (sender, recipient, created, content) VALUES (?, ?, ?, ?)",
+	cur.execute(
+		"INSERT INTO messages (sender, recipient, created, content) VALUES (%s, %s, %s, %s);",
 		(sender, recipient, current_time, content)
 	)
 	db.commit()
+	cur.close()
 
 	message = {
 		'sender': sender,
@@ -89,17 +93,21 @@ def handle_message(msg):
 @login_required
 def chat(username):
 	db = get_db()
+	cur = get_dict_cursor(db)
 	user = g.user
 
-	other_user = db.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
+	cur.execute("SELECT * FROM users WHERE username = %s;", (username,))
+	other_user = cur.fetchone()
 	if other_user is None:
 		return abort(404, "user does not exist")
 
-	messages = db.execute(
-		"SELECT * FROM messages WHERE sender = ? AND recipient = ? OR sender = ? AND recipient = ? \
-		ORDER BY created ASC",
+	cur.execute(
+		"SELECT * FROM messages WHERE sender = %s AND recipient = %s OR sender = %s AND recipient = %s \
+		ORDER BY created ASC;",
 		(user['id'], other_user['id'], other_user['id'], user['id'])
-	).fetchall()
+	)
+	messages = cur.fetchall()
+	cur.close()
 
 	return render_template('chat/chatroom.html', other_user=other_user, messages=messages)
 
@@ -108,8 +116,10 @@ def chat(username):
 @login_required
 def send_message(id):
 	db = get_db()
+	cur = get_dict_cursor(db)
 	user = g.user
-	other_user = db.execute("SELECT * FROM users WHERE id = ?", (id,)).fetchone()
+	cur.execute("SELECT * FROM users WHERE id = %s;", (id,))
+	other_user = cur.fetchone()
 	room = hash_unique_room(user['id'], id)
 
 	# verify that other user exists
@@ -120,11 +130,12 @@ def send_message(id):
 
 	current_time = datetime.now().astimezone(pytz.timezone('US/Eastern'))
 
-	db.execute(
-		"INSERT INTO messages (sender, recipient, created, content) VALUES (?, ?, ?, ?)",
+	cur.execute(
+		"INSERT INTO messages (sender, recipient, created, content) VALUES (%s, %s, %s, %s)",
 		(user['id'], id, current_time, message_content)
 	)
 	db.commit()
+	cur.close()
 
 	message = {
 		'sender': user['id'],

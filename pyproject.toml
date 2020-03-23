@@ -9,6 +9,7 @@ python = "^3.7"
 flask = "^1.1"
 flask-socketio = "^4.2"
 pytz = "^2019.3"
+psycopg2-binary = "^2.8"
 
 [tool.poetry.dev-dependencies]
 
