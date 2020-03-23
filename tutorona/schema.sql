@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS posts;
 DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS tags;
 DROP TABLE IF EXISTS tags_to_posts;
+DROP TABLE IF EXISTS messages;
 
 CREATE TABLE users (
   id INTEGER PRIMARY KEY,
@@ -12,7 +13,8 @@ CREATE TABLE users (
   created DATETIME NOT NULL,
   last_signin DATETIME NOT NULL,
   lang CHAR(3) NOT NULL,
-  bio TEXT NOT NULL DEFAULT ''
+  bio TEXT NOT NULL DEFAULT '',
+  picture IMAGE
 );
 
 CREATE TABLE posts (
@@ -45,4 +47,14 @@ CREATE TABLE tags_to_posts (
   tag_id INTEGER NOT NULL,
   FOREIGN KEY(post_id) REFERENCES posts(id),
   FOREIGN KEY(tag_id) REFERENCES tags(id)
+);
+
+CREATE TABLE messages (
+  id INTEGER PRIMARY KEY,
+  sender INTEGER NOT NULL,
+  recipient INTEGER NOT NULL,
+  created DATETIME NOT NULL,
+  content TEXT NOT NULL,
+  FOREIGN KEY(sender) REFERENCES users(id),
+  FOREIGN KEY(recipient) REFERENCES users(id)
 );

@@ -22,7 +22,10 @@
         {% for post in posts %}
           <tr>
             <td><a href="{{ url_for('forum.forum_post', id=post['id']) }}">{{ post['title'] }}</a></td>
-            <td>{{ post['username'] }}</td>
+              <td><a href="{{ url_for('userpage.user', username=post['username'])}}">
+                {{ post['username'] }}
+              </a>
+              </td>
             <td>{{ post['post_content'][0:29] }}</td>
             <td>{{ post['created'] }}</td>
           </tr>
