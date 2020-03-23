@@ -9,8 +9,6 @@ python = "^3.7"
 flask = "^1.1"
 flask-socketio = "^4.2"
 pytz = "^2019.3"
-gevent = "^1.4"
-gevent-websocket = "^0.10.1"
 
 [tool.poetry.dev-dependencies]
 
