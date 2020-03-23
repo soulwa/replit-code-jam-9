@@ -110,7 +110,9 @@ def send_message(id):
 	db = get_db()
 	user = g.user
 	other_user = db.execute("SELECT * FROM users WHERE id = ?", (id,)).fetchone()
-	room = sha256((str(sha256(user['username'].encode('utf-8'))) + str(sha256(other_user['username'].encode('utf-8')))).encode('utf-8'))
+	room = hash_unique_room(user['id'], id)
+
+	# verify that other user exists
 
 	message_content = request.form.get('message')
 	if message_content is None:
@@ -131,6 +133,6 @@ def send_message(id):
 		'content': message_content
 	}
 
-	socketio.send('chat_message', json=message, room=room)
+	socketio.emit('chat_message', message, room=room)
 	return redirect(url_for('chat.chat', username=other_user['username']))
 

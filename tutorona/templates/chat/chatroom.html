@@ -56,17 +56,15 @@
 	          <th scope="col">Message</th>
 	        </tr>
       	</thead>
-      	<tbody>
-			<div class="message-container">
-				{% for message in messages %}
-					<tr>
-						<td>{{ message['sender'] }}</td>
-						<td>{{ message['recipient'] }}</td>
-						<td>{{ message['created'] }}</td>
-						<td>{{ message['content'] }}</td>
-					</tr>
-				{% endfor %}
-			</div>
+      	<tbody class="message-container">
+			{% for message in messages %}
+				<tr>
+					<td>{{ message['sender'] }}</td>
+					<td>{{ message['recipient'] }}</td>
+					<td>{{ message['created'] }}</td>
+					<td>{{ message['content'] }}</td>
+				</tr>
+			{% endfor %}
 	  	</tbody>
 	</table>
 

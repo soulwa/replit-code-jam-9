@@ -4,8 +4,6 @@ from flask import Flask
 from flask_socketio import SocketIO
 from werkzeug.exceptions import HTTPException
 
-
-
 socketio = SocketIO()
 
 def create_app(test_config=None, debug=False):
@@ -19,7 +17,7 @@ def create_app(test_config=None, debug=False):
     app.config.from_pyfile('config.py', silent=True)
   else:
     app.config.from_mapping(test_config)
-    
+
   app.debug = debug
   
   try:
