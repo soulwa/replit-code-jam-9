@@ -34,7 +34,18 @@
   <form action="/" method="post">
     <input autofocus name="title" placeholder="Title" type="text" maxlength="128" required>
     <textarea name="post_content" rows="9" cols="100" placeholder="write your post here!" type="text" required></textarea>
+    <input type="checkbox" name="tags" value="science">
+      Science
+    <input type="checkbox" name="tags" value="math">
+      Math
+    <input type="checkbox" name="tags" value="language">
+      Language
+    <input type="checkbox" name="tags" value="history">
+      History
+    <input type="text" name="other_tags">
+      Other tags: separate by space
     <input type="submit" value="Publish">
+    
   </form>
 
 {% endblock %}

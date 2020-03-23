@@ -1,6 +1,8 @@
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS posts;
 DROP TABLE IF EXISTS comments;
+DROP TABLE IF EXISTS tags;
+DROP TABLE IF EXISTS tags_to_posts;
 
 CREATE TABLE users (
   id INTEGER PRIMARY KEY,
@@ -31,4 +33,16 @@ CREATE TABLE comments (
   user_id INTEGER NOT NULL,
   FOREIGN KEY(post_id) REFERENCES posts(id),
   FOREIGN KEY(user_id) REFERENCES users(id)
+);
+
+CREATE TABLE tags (
+  id INTEGER PRIMARY KEY,
+  tag_content TEXT NOT NULL,
+);
+
+CREATE TABLE tags_to_posts (
+  post_id INTEGER NOT NULL,
+  tag_id INTEGER NOT NULL,
+  FOREIGN KEY(post_id) REFERENCES posts(id),
+  FOREIGN KEY(tag_id) REFERENCES tags(id)
 );
