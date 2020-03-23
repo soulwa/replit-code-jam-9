@@ -37,10 +37,10 @@ def index():
       other_tags = request.form.get('other_tags').split()
       tags = tags + other_tags
 
-    if title is None or post_content is None:
-      abort(400) # post missing title or content
+    if title is None or post_content is None or title == "" or post_content == "":
+      abort(400, "please add a title/content!") # post missing title or content
     if len(title) > 128:
-      abort(400) # too long for database
+      abort(400, "title too long (max 128 characters)") # too long for database
 
     db.execute(
       "INSERT INTO posts (title, post_content, created, lang, user_id) VALUES (?, ?, ?, ?, ?)",
