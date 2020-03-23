@@ -6,7 +6,9 @@
 
 {% block main %}
 
-  <h1>{{ forum_post['title']}} by {{ forum_post['username'] }}</h1>
+  <h1>{{ forum_post['title']}} by 
+    <a href="{{ url_for('userpage.user', username=forum_post['username'])}}"> {{ forum_post['username'] }}</a>
+  </h1>
   <h2>created {{ forum_post['created']}}</h2>
   <p>{{ forum_post['post_content'] }}</p>
 
@@ -18,7 +20,9 @@
   {% if comments %}
     <ul>
       {% for comment in comments %}
-        <li> {{ comment['username'] }} at {{ comment['created'] }}: {{ comment['comment_content'] }} </li>
+        <li> <a href="{{ url_for('userpage.user', username=comment['username'])}}"> {{ comment['username'] }} </a>
+         at {{ comment['created'] }}: {{ comment['comment_content'] }}
+          </li>
         <hr>
       {% endfor %}
     </ul>

@@ -1,0 +1,76 @@
+{% extends 'layout.html' %}
+
+{% block scripts %}
+
+	<script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf-8">
+    	$( document ).ready(function() {
+	        var socket = io();
+
+	        socket.on('connect', function() {
+	            console.log("I'm connected!");
+	            socket.emit('joined', {'id': "{{ g.user['id'] }}", 'other_id': "{{ other_user['id'] }}" });
+	        });
+
+	        $(".message-form").submit(function(event) {
+	        	event.preventDefault();
+	        	console.log('overrode form');
+	        	socket.emit('message_send', 
+	        		{
+	        			'content': $('#message-content').val(), 
+	        		 	'recipient': "{{ other_user['id'] }}",
+	        		 	'sender': "{{ g.user['id'] }}"
+	        		});
+	        	$('#message-content').val('');
+	        });
+
+	        socket.on('message_receive', function(msg) {
+	        	console.log('got message!' + msg)
+	        	$(".message-container").append(
+	        		"<tr>" +
+					"<td>"+ msg['sender'] + "</td>" +
+					"<td>"+ msg['recipient'] + "</td>" +
+					"<td>"+ msg['created'] + "</td>" +
+					"<td>"+ msg['content'] + "</td>" +
+					"</tr>");
+	        });
+	    });
+    </script>
+
+{% endblock %}
+
+{% block title %}Chat{% endblock %}
+
+{% block header %}{{ other_user['username'] }}{% endblock %}
+
+{% block main %}
+
+	<table>
+      	<thead>
+	        <tr>
+	          <th scope="col">From</th>
+	          <th scope="col">To</th>
+	          <th scope="col">Date</th>
+	          <th scope="col">Message</th>
+	        </tr>
+      	</thead>
+      	<tbody class="message-container">
+			{% for message in messages %}
+				<tr>
+					<td>{{ message['sender'] }}</td>
+					<td>{{ message['recipient'] }}</td>
+					<td>{{ message['created'] }}</td>
+					<td>{{ message['content'] }}</td>
+				</tr>
+			{% endfor %}
+	  	</tbody>
+	</table>
+
+	<form class="message-form" action="/send/{{ other_user['id'] }}" method="post">
+    	<textarea id="message-content" name="message" rows="9" cols="100" placeholder="send a chat message here!" type="text" required></textarea>
+    	<input id="message-submit" type="submit" value="send">
+  	</form>
+
+{% endblock %}
