@@ -39,7 +39,7 @@ CREATE TABLE comments (
 
 CREATE TABLE tags (
   id INTEGER PRIMARY KEY,
-  tag_content TEXT NOT NULL,
+  tag_content TEXT NOT NULL
 );
 
 CREATE TABLE tags_to_posts (

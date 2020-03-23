@@ -15,7 +15,7 @@ def index():
   user = g.user
 
   if user is None:
-    abort(403)
+    abort(403, 'please clear your session data!')
 
   if request.method == 'GET':
     lang = user['lang']
@@ -67,7 +67,7 @@ def forum_post(id):
   user = g.user
 
   if user is None:
-    abort(403)
+    abort(403, 'please clear your session data!')
   
   if request.method == 'GET':
     post = db.execute(
@@ -96,7 +96,7 @@ def comment(id):
 
   comment_text = request.form.get('comment')
   if comment_text is None:
-    return abort(403)
+    return abort(403, 'comment was empty!')
   
   db.execute(
     "INSERT INTO comments (comment_content, created, post_id, user_id) VALUES (?, ?, ?, ?)",
